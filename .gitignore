@@ -1,0 +1,28 @@
+# Unreal Engine
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Build logs / generated order files
+Build/*/FileOpenOrder/
+*.log
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Linux virtualenv artifacts
+vr_api/.venv/
+
+# VS / IDE
+.vs/
+.vscode/
+*.sln
+*.VC.db
+
+# OS
+Thumbs.db
+.DS_Store
