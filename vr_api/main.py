@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi import FastAPI, Request
+
 import paho.mqtt.client as mqtt
 import json
 import os
@@ -64,20 +66,35 @@ class ColorRGBBody(BaseModel):
     g: int  # 0..255
     b: int  # 0..255
 
+
 @app.post("/lamp/color_rgb")
-def lamp_color_rgb(body: ColorRGBBody):
-    # sRGB → linear → XYZ → xy
+async def lamp_color_rgb(request: Request):
+    body = await request.body()
+    print(f"RAW BODY: {body}")
+    print(f"Content-Type: {request.headers.get('content-type')}")
+
+    try:
+        data = await request.json()
+        print(f"PARSED JSON: {data}")
+    except Exception as e:
+        print(f"JSON PARSE ERROR: {e}")
+        return {"ok": False, "error": str(e)}
+
+    r = data.get("r", 0)
+    g = data.get("g", 0)
+    b = data.get("b", 0)
+
     def to_linear(c):
         c = c / 255.0
         return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
-    rl, gl, bl = to_linear(body.r), to_linear(body.g), to_linear(body.b)
+    rl, gl, bl = to_linear(r), to_linear(g), to_linear(b)
     X = rl * 0.4124 + gl * 0.3576 + bl * 0.1805
     Y = rl * 0.2126 + gl * 0.7152 + bl * 0.0722
     Z = rl * 0.0193 + gl * 0.1192 + bl * 0.9505
     s = X + Y + Z
     if s == 0:
-        x, y = 0.3127, 0.3290  # D65 white
+        x, y = 0.3127, 0.3290
     else:
         x, y = X / s, Y / s
 
