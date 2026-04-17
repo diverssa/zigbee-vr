@@ -1,13 +1,13 @@
 {
     "0xa4c138bf5ce9467d": {
-        "brightness": 150,
-        "state": "OFF",
+        "brightness": 254,
+        "state": "ON",
         "color_mode": "xy",
         "color": {
-            "x": 0.3127,
-            "y": 0.329
+            "x": 0.315636318474796,
+            "y": 0.33633305157320326
         },
-        "color_temp": 154,
-        "linkquality": 236
+        "color_temp": 159,
+        "linkquality": 244
     }
 }
