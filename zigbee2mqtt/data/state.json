@@ -4,10 +4,10 @@
         "state": "ON",
         "color_mode": "xy",
         "color": {
-            "x": 0.33333333333333326,
-            "y": 0.3333333333333333
+            "x": 0.3188,
+            "y": 0.3338
         },
-        "color_temp": 183,
-        "linkquality": 244
+        "color_temp": 162,
+        "linkquality": 216
     }
 }
