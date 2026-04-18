@@ -28,6 +28,8 @@ vr_api/.venv/
 .vscode/
 .idea/
 MyProject2/.vs/
+MyProject2/.idea/
+MyProject2/.vsconfig
 *.sln
 *.suo
 *.VC.db
