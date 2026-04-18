@@ -110,7 +110,8 @@ int32 SLampStyledSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
         );
     }
 
-    const float FillWidth = bFillToValue ? (TrackSize.X * Value) : TrackSize.X;
+    const float ValueWidth = TrackSize.X * Value;
+    const float FillWidth = bFillToValue ? ValueWidth : TrackSize.X;
     if (FillWidth > 0.0f)
     {
         FSlateDrawElement::MakeBox(
@@ -126,7 +127,7 @@ int32 SLampStyledSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
         );
     }
 
-    const float ThumbX = TrackRect.Left + FillWidth - (ThumbSize.X * 0.5f);
+    const float ThumbX = TrackRect.Left + ValueWidth - (ThumbSize.X * 0.5f);
     const float ThumbY = (LocalSize.Y - ThumbSize.Y) * 0.5f;
     FSlateDrawElement::MakeBox(
         OutDrawElements,

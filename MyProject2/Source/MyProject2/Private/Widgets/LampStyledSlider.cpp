@@ -30,6 +30,11 @@ void ULampStyledSlider::SetValue(float InValue)
     }
 }
 
+float ULampStyledSlider::GetValue() const
+{
+    return Value;
+}
+
 TSharedRef<SWidget> ULampStyledSlider::RebuildWidget()
 {
     RefreshDynamicFillMaterial();
@@ -111,6 +116,7 @@ void ULampStyledSlider::RefreshDynamicFillMaterial()
     if (!bDriveFillMaterialByValue)
     {
         DynamicTrackFillMaterial = nullptr;
+        DynamicTrackFillMaterialSource = nullptr;
         return;
     }
 
@@ -119,12 +125,14 @@ void ULampStyledSlider::RefreshDynamicFillMaterial()
     if (!Material)
     {
         DynamicTrackFillMaterial = nullptr;
+        DynamicTrackFillMaterialSource = nullptr;
         return;
     }
 
-    if (!DynamicTrackFillMaterial || RuntimeTrackFillBrush.GetResourceObject() != DynamicTrackFillMaterial)
+    if (!DynamicTrackFillMaterial || DynamicTrackFillMaterialSource != Material)
     {
         DynamicTrackFillMaterial = UMaterialInstanceDynamic::Create(Material, this);
+        DynamicTrackFillMaterialSource = Material;
     }
 
     RuntimeTrackFillBrush.SetResourceObject(DynamicTrackFillMaterial);

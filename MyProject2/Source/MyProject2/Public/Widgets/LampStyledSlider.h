@@ -6,6 +6,7 @@
 
 class SLampStyledSlider;
 class UMaterialInstanceDynamic;
+class UMaterialInterface;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLampStyledSliderValueChanged, float, Value);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLampStyledSliderCaptureEvent);
@@ -18,7 +19,7 @@ class MYPROJECT2_API ULampStyledSlider : public UWidget
 public:
     ULampStyledSlider(const FObjectInitializer& ObjectInitializer);
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior", meta = (ClampMin = "0.0", ClampMax = "1.0", BlueprintGetter = "GetValue", BlueprintSetter = "SetValue"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior", meta = (ClampMin = "0.0", ClampMax = "1.0"))
     float Value;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Behavior", meta = (ClampMin = "0.001", ClampMax = "1.0"))
@@ -64,7 +65,7 @@ public:
     void SetValue(float InValue);
 
     UFUNCTION(BlueprintPure, Category = "Behavior")
-    float GetValue() const { return Value; }
+    float GetValue() const;
 
 protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -87,6 +88,9 @@ private:
 
     UPROPERTY(Transient)
     TObjectPtr<UMaterialInstanceDynamic> DynamicTrackFillMaterial;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInterface> DynamicTrackFillMaterialSource;
 
     FSlateBrush RuntimeTrackFillBrush;
 };
