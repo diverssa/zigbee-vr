@@ -10,11 +10,14 @@ void SLampStyledSlider::Construct(const FArguments& InArgs)
     Value = FMath::Clamp(InArgs._Value, 0.0f, 1.0f);
     StepSize = FMath::Clamp(InArgs._StepSize, KINDA_SMALL_NUMBER, 1.0f);
     TrackHeight = FMath::Max(1.0f, InArgs._TrackHeight);
+    TrackInset = FMath::Max(0.0f, InArgs._TrackInset);
+    ThumbTravelInset = FMath::Max(0.0f, InArgs._ThumbTravelInset);
     ThumbSize = FVector2D(FMath::Max(InArgs._ThumbSize.X, 1.0f), FMath::Max(InArgs._ThumbSize.Y, 1.0f));
     TrackBackgroundBrush = InArgs._TrackBackgroundBrush;
     TrackFillBrush = InArgs._TrackFillBrush;
     ThumbBrush = InArgs._ThumbBrush;
     bShowTrackBackground = InArgs._bShowTrackBackground;
+    bShowTrackFill = InArgs._bShowTrackFill;
     bFillToValue = InArgs._bFillToValue;
     OnValueChanged = InArgs._OnValueChanged;
     OnCaptureStarted = InArgs._OnCaptureStarted;
@@ -35,6 +38,18 @@ void SLampStyledSlider::SetStepSize(float InStepSize)
 void SLampStyledSlider::SetTrackHeight(float InTrackHeight)
 {
     TrackHeight = FMath::Max(1.0f, InTrackHeight);
+    Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+}
+
+void SLampStyledSlider::SetTrackInset(float InTrackInset)
+{
+    TrackInset = FMath::Max(0.0f, InTrackInset);
+    Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
+}
+
+void SLampStyledSlider::SetThumbTravelInset(float InThumbTravelInset)
+{
+    ThumbTravelInset = FMath::Max(0.0f, InThumbTravelInset);
     Invalidate(EInvalidateWidgetReason::LayoutAndVolatility);
 }
 
@@ -65,6 +80,12 @@ void SLampStyledSlider::SetThumbBrush(const FSlateBrush* InBrush)
 void SLampStyledSlider::SetShowTrackBackground(bool bInShowTrackBackground)
 {
     bShowTrackBackground = bInShowTrackBackground;
+    Invalidate(EInvalidateWidgetReason::Paint);
+}
+
+void SLampStyledSlider::SetShowTrackFill(bool bInShowTrackFill)
+{
+    bShowTrackFill = bInShowTrackFill;
     Invalidate(EInvalidateWidgetReason::Paint);
 }
 
@@ -110,9 +131,11 @@ int32 SLampStyledSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
         );
     }
 
-    const float ValueWidth = TrackSize.X * Value;
+    const FSlateRect ThumbTravelRect = GetThumbTravelRect(LocalSize);
+    const float TravelWidth = FMath::Max(1.0f, ThumbTravelRect.Right - ThumbTravelRect.Left);
+    const float ValueWidth = TravelWidth * Value;
     const float FillWidth = bFillToValue ? ValueWidth : TrackSize.X;
-    if (FillWidth > 0.0f)
+    if (bShowTrackFill && FillWidth > 0.0f)
     {
         FSlateDrawElement::MakeBox(
             OutDrawElements,
@@ -127,7 +150,7 @@ int32 SLampStyledSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
         );
     }
 
-    const float ThumbX = TrackRect.Left + ValueWidth - (ThumbSize.X * 0.5f);
+    const float ThumbX = ThumbTravelRect.Left + ValueWidth - (ThumbSize.X * 0.5f);
     const float ThumbY = (LocalSize.Y - ThumbSize.Y) * 0.5f;
     FSlateDrawElement::MakeBox(
         OutDrawElements,
@@ -216,9 +239,9 @@ float SLampStyledSlider::GetSnappedValue(float InValue) const
 
 float SLampStyledSlider::PositionToNormalizedValue(const FGeometry& MyGeometry, float LocalX) const
 {
-    const FSlateRect TrackRect = GetTrackRect(MyGeometry.GetLocalSize());
-    const float TrackWidth = FMath::Max(1.0f, TrackRect.Right - TrackRect.Left);
-    return FMath::Clamp((LocalX - TrackRect.Left) / TrackWidth, 0.0f, 1.0f);
+    const FSlateRect ThumbRect = GetThumbTravelRect(MyGeometry.GetLocalSize());
+    const float TrackWidth = FMath::Max(1.0f, ThumbRect.Right - ThumbRect.Left);
+    return FMath::Clamp((LocalX - ThumbRect.Left) / TrackWidth, 0.0f, 1.0f);
 }
 
 void SLampStyledSlider::CommitValueFromLocalX(const FGeometry& MyGeometry, float LocalX)
@@ -234,9 +257,16 @@ void SLampStyledSlider::CommitValueFromLocalX(const FGeometry& MyGeometry, float
 
 FSlateRect SLampStyledSlider::GetTrackRect(const FVector2D& LocalSize) const
 {
-    const float ThumbHalfWidth = ThumbSize.X * 0.5f;
-    const float Left = ThumbHalfWidth;
-    const float Right = FMath::Max(Left + 1.0f, LocalSize.X - ThumbHalfWidth);
+    const float Left = TrackInset;
+    const float Right = FMath::Max(Left + 1.0f, LocalSize.X - TrackInset);
+    const float Top = (LocalSize.Y - TrackHeight) * 0.5f;
+    return FSlateRect(Left, Top, Right, Top + TrackHeight);
+}
+
+FSlateRect SLampStyledSlider::GetThumbTravelRect(const FVector2D& LocalSize) const
+{
+    const float Left = ThumbTravelInset;
+    const float Right = FMath::Max(Left + 1.0f, LocalSize.X - ThumbTravelInset);
     const float Top = (LocalSize.Y - TrackHeight) * 0.5f;
     return FSlateRect(Left, Top, Right, Top + TrackHeight);
 }

@@ -16,22 +16,28 @@ public:
         : _Value(0.0f)
         , _StepSize(0.01f)
         , _TrackHeight(20.0f)
+        , _TrackInset(8.0f)
+        , _ThumbTravelInset(8.0f)
         , _ThumbSize(FVector2D(18.0f, 28.0f))
         , _TrackBackgroundBrush(nullptr)
         , _TrackFillBrush(nullptr)
         , _ThumbBrush(nullptr)
         , _bShowTrackBackground(true)
+        , _bShowTrackFill(true)
         , _bFillToValue(true)
     {
     }
         SLATE_ARGUMENT(float, Value)
         SLATE_ARGUMENT(float, StepSize)
         SLATE_ARGUMENT(float, TrackHeight)
+        SLATE_ARGUMENT(float, TrackInset)
+        SLATE_ARGUMENT(float, ThumbTravelInset)
         SLATE_ARGUMENT(FVector2D, ThumbSize)
         SLATE_ARGUMENT(const FSlateBrush*, TrackBackgroundBrush)
         SLATE_ARGUMENT(const FSlateBrush*, TrackFillBrush)
         SLATE_ARGUMENT(const FSlateBrush*, ThumbBrush)
         SLATE_ARGUMENT(bool, bShowTrackBackground)
+        SLATE_ARGUMENT(bool, bShowTrackFill)
         SLATE_ARGUMENT(bool, bFillToValue)
         SLATE_EVENT(FOnLampStyledSliderValueChangedNative, OnValueChanged)
         SLATE_EVENT(FOnLampStyledSliderCaptureNative, OnCaptureStarted)
@@ -43,11 +49,14 @@ public:
     void SetValue(float InValue);
     void SetStepSize(float InStepSize);
     void SetTrackHeight(float InTrackHeight);
+    void SetTrackInset(float InTrackInset);
+    void SetThumbTravelInset(float InThumbTravelInset);
     void SetThumbSize(FVector2D InThumbSize);
     void SetTrackBackgroundBrush(const FSlateBrush* InBrush);
     void SetTrackFillBrush(const FSlateBrush* InBrush);
     void SetThumbBrush(const FSlateBrush* InBrush);
     void SetShowTrackBackground(bool bInShowTrackBackground);
+    void SetShowTrackFill(bool bInShowTrackFill);
     void SetFillToValue(bool bInFillToValue);
 
     virtual int32 OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect,
@@ -66,17 +75,21 @@ private:
     float PositionToNormalizedValue(const FGeometry& MyGeometry, float LocalX) const;
     void CommitValueFromLocalX(const FGeometry& MyGeometry, float LocalX);
     FSlateRect GetTrackRect(const FVector2D& LocalSize) const;
+    FSlateRect GetThumbTravelRect(const FVector2D& LocalSize) const;
 
 private:
     float Value = 0.0f;
     float StepSize = 0.01f;
     float TrackHeight = 20.0f;
+    float TrackInset = 8.0f;
+    float ThumbTravelInset = 8.0f;
     FVector2D ThumbSize = FVector2D(18.0f, 28.0f);
 
     const FSlateBrush* TrackBackgroundBrush = nullptr;
     const FSlateBrush* TrackFillBrush = nullptr;
     const FSlateBrush* ThumbBrush = nullptr;
     bool bShowTrackBackground = true;
+    bool bShowTrackFill = true;
     bool bFillToValue = true;
 
     FOnLampStyledSliderValueChangedNative OnValueChanged;

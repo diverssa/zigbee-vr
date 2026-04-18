@@ -11,8 +11,11 @@ ULampStyledSlider::ULampStyledSlider(const FObjectInitializer& ObjectInitializer
     , Value(0.0f)
     , StepSize(0.01f)
     , TrackHeight(20.0f)
+    , TrackInset(8.0f)
+    , ThumbTravelInset(8.0f)
     , ThumbSize(18.0f, 28.0f)
     , bShowTrackBackground(true)
+    , bShowTrackFill(true)
     , bFillToValue(true)
     , bDriveFillMaterialByValue(false)
     , FillPercentParameterName(TEXT("Percent"))
@@ -43,11 +46,14 @@ TSharedRef<SWidget> ULampStyledSlider::RebuildWidget()
         .Value(Value)
         .StepSize(StepSize)
         .TrackHeight(TrackHeight)
+        .TrackInset(TrackInset)
+        .ThumbTravelInset(ThumbTravelInset)
         .ThumbSize(ThumbSize)
         .TrackBackgroundBrush(&TrackBackgroundBrush)
         .TrackFillBrush(&RuntimeTrackFillBrush)
         .ThumbBrush(&ThumbBrush)
         .bShowTrackBackground(bShowTrackBackground)
+        .bShowTrackFill(bShowTrackFill)
         .bFillToValue(bFillToValue)
         .OnValueChanged(FOnLampStyledSliderValueChangedNative::CreateUObject(this, &ULampStyledSlider::HandleSlateValueChanged))
         .OnCaptureStarted(FOnLampStyledSliderCaptureNative::CreateUObject(this, &ULampStyledSlider::HandleSlateCaptureStarted))
@@ -71,11 +77,14 @@ void ULampStyledSlider::SynchronizeProperties()
     MySlider->SetValue(Value);
     MySlider->SetStepSize(StepSize);
     MySlider->SetTrackHeight(TrackHeight);
+    MySlider->SetTrackInset(TrackInset);
+    MySlider->SetThumbTravelInset(ThumbTravelInset);
     MySlider->SetThumbSize(ThumbSize);
     MySlider->SetTrackBackgroundBrush(&TrackBackgroundBrush);
     MySlider->SetTrackFillBrush(&RuntimeTrackFillBrush);
     MySlider->SetThumbBrush(&ThumbBrush);
     MySlider->SetShowTrackBackground(bShowTrackBackground);
+    MySlider->SetShowTrackFill(bShowTrackFill);
     MySlider->SetFillToValue(bFillToValue);
 }
 

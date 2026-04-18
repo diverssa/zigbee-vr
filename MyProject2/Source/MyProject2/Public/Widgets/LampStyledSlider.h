@@ -28,6 +28,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance", meta = (ClampMin = "1.0"))
     float TrackHeight;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance", meta = (ClampMin = "0.0"))
+    float TrackInset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance", meta = (ClampMin = "0.0"))
+    float ThumbTravelInset;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
     FVector2D ThumbSize;
 
@@ -42,6 +48,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
     bool bShowTrackBackground;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
+    bool bShowTrackFill;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Appearance")
     bool bFillToValue;
