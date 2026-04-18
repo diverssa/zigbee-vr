@@ -1,11 +1,17 @@
-# Unreal Engine
-Binaries/
-DerivedDataCache/
-Intermediate/
-Saved/
+# Unreal Engine, project-local generated folders
+MyProject2/Binaries/
+MyProject2/DerivedDataCache/
+MyProject2/Intermediate/
+MyProject2/Saved/
+
+# Unreal Engine plugin generated folders
+MyProject2/Plugins/**/Binaries/
+MyProject2/Plugins/**/DerivedDataCache/
+MyProject2/Plugins/**/Intermediate/
+MyProject2/Plugins/**/Saved/
 
 # Build logs / generated order files
-Build/*/FileOpenOrder/
+MyProject2/Build/*/FileOpenOrder/
 *.log
 
 # Python
@@ -20,8 +26,14 @@ vr_api/.venv/
 # VS / IDE
 .vs/
 .vscode/
+.idea/
+MyProject2/.vs/
 *.sln
+*.suo
 *.VC.db
+*.VC.opendb
+*.opensdf
+*.sdf
 
 # OS
 Thumbs.db
