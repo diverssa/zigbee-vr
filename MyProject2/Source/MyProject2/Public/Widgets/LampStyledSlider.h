@@ -76,6 +76,15 @@ public:
     UFUNCTION(BlueprintPure, Category = "Behavior")
     float GetValue() const;
 
+    UFUNCTION(BlueprintCallable, Category = "Appearance|Material")
+    UMaterialInstanceDynamic* GetTrackBackgroundDynamicMaterial();
+
+    UFUNCTION(BlueprintCallable, Category = "Appearance|Material")
+    void SetTrackBackgroundScalarParameter(FName ParameterName, float InValue);
+
+    UFUNCTION(BlueprintCallable, Category = "Appearance|Material")
+    void SetTrackBackgroundVectorParameter(FName ParameterName, FLinearColor InValue);
+
 protected:
     virtual TSharedRef<SWidget> RebuildWidget() override;
     virtual void SynchronizeProperties() override;
@@ -89,6 +98,7 @@ private:
     void HandleSlateValueChanged(float InValue);
     void HandleSlateCaptureStarted();
     void HandleSlateCaptureEnded();
+    void RefreshDynamicBackgroundMaterial();
     void RefreshDynamicFillMaterial();
     void UpdateDynamicFillMaterialValue();
 
@@ -96,10 +106,17 @@ private:
     TSharedPtr<SLampStyledSlider> MySlider;
 
     UPROPERTY(Transient)
+    TObjectPtr<UMaterialInstanceDynamic> DynamicTrackBackgroundMaterial;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInterface> DynamicTrackBackgroundMaterialSource;
+
+    UPROPERTY(Transient)
     TObjectPtr<UMaterialInstanceDynamic> DynamicTrackFillMaterial;
 
     UPROPERTY(Transient)
     TObjectPtr<UMaterialInterface> DynamicTrackFillMaterialSource;
 
+    FSlateBrush RuntimeTrackBackgroundBrush;
     FSlateBrush RuntimeTrackFillBrush;
 };

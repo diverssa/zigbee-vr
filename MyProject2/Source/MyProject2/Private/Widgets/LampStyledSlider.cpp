@@ -20,6 +20,7 @@ ULampStyledSlider::ULampStyledSlider(const FObjectInitializer& ObjectInitializer
     , bDriveFillMaterialByValue(false)
     , FillPercentParameterName(TEXT("Percent"))
 {
+    RuntimeTrackBackgroundBrush = TrackBackgroundBrush;
     RuntimeTrackFillBrush = TrackFillBrush;
 }
 
@@ -38,8 +39,41 @@ float ULampStyledSlider::GetValue() const
     return Value;
 }
 
+UMaterialInstanceDynamic* ULampStyledSlider::GetTrackBackgroundDynamicMaterial()
+{
+    RefreshDynamicBackgroundMaterial();
+    return DynamicTrackBackgroundMaterial;
+}
+
+void ULampStyledSlider::SetTrackBackgroundScalarParameter(FName ParameterName, float InValue)
+{
+    RefreshDynamicBackgroundMaterial();
+    if (DynamicTrackBackgroundMaterial)
+    {
+        DynamicTrackBackgroundMaterial->SetScalarParameterValue(ParameterName, InValue);
+        if (MySlider.IsValid())
+        {
+            MySlider->SetTrackBackgroundBrush(&RuntimeTrackBackgroundBrush);
+        }
+    }
+}
+
+void ULampStyledSlider::SetTrackBackgroundVectorParameter(FName ParameterName, FLinearColor InValue)
+{
+    RefreshDynamicBackgroundMaterial();
+    if (DynamicTrackBackgroundMaterial)
+    {
+        DynamicTrackBackgroundMaterial->SetVectorParameterValue(ParameterName, InValue);
+        if (MySlider.IsValid())
+        {
+            MySlider->SetTrackBackgroundBrush(&RuntimeTrackBackgroundBrush);
+        }
+    }
+}
+
 TSharedRef<SWidget> ULampStyledSlider::RebuildWidget()
 {
+    RefreshDynamicBackgroundMaterial();
     RefreshDynamicFillMaterial();
 
     MySlider = SNew(SLampStyledSlider)
@@ -49,7 +83,7 @@ TSharedRef<SWidget> ULampStyledSlider::RebuildWidget()
         .TrackInset(TrackInset)
         .ThumbTravelInset(ThumbTravelInset)
         .ThumbSize(ThumbSize)
-        .TrackBackgroundBrush(&TrackBackgroundBrush)
+        .TrackBackgroundBrush(&RuntimeTrackBackgroundBrush)
         .TrackFillBrush(&RuntimeTrackFillBrush)
         .ThumbBrush(&ThumbBrush)
         .bShowTrackBackground(bShowTrackBackground)
@@ -66,6 +100,7 @@ void ULampStyledSlider::SynchronizeProperties()
 {
     Super::SynchronizeProperties();
 
+    RefreshDynamicBackgroundMaterial();
     RefreshDynamicFillMaterial();
     UpdateDynamicFillMaterialValue();
 
@@ -80,7 +115,7 @@ void ULampStyledSlider::SynchronizeProperties()
     MySlider->SetTrackInset(TrackInset);
     MySlider->SetThumbTravelInset(ThumbTravelInset);
     MySlider->SetThumbSize(ThumbSize);
-    MySlider->SetTrackBackgroundBrush(&TrackBackgroundBrush);
+    MySlider->SetTrackBackgroundBrush(&RuntimeTrackBackgroundBrush);
     MySlider->SetTrackFillBrush(&RuntimeTrackFillBrush);
     MySlider->SetThumbBrush(&ThumbBrush);
     MySlider->SetShowTrackBackground(bShowTrackBackground);
@@ -116,6 +151,28 @@ void ULampStyledSlider::HandleSlateCaptureStarted()
 void ULampStyledSlider::HandleSlateCaptureEnded()
 {
     OnCaptureEnded.Broadcast();
+}
+
+void ULampStyledSlider::RefreshDynamicBackgroundMaterial()
+{
+    RuntimeTrackBackgroundBrush = TrackBackgroundBrush;
+
+    UObject* Resource = TrackBackgroundBrush.GetResourceObject();
+    UMaterialInterface* Material = Cast<UMaterialInterface>(Resource);
+    if (!Material)
+    {
+        DynamicTrackBackgroundMaterial = nullptr;
+        DynamicTrackBackgroundMaterialSource = nullptr;
+        return;
+    }
+
+    if (!DynamicTrackBackgroundMaterial || DynamicTrackBackgroundMaterialSource != Material)
+    {
+        DynamicTrackBackgroundMaterial = UMaterialInstanceDynamic::Create(Material, this);
+        DynamicTrackBackgroundMaterialSource = Material;
+    }
+
+    RuntimeTrackBackgroundBrush.SetResourceObject(DynamicTrackBackgroundMaterial);
 }
 
 void ULampStyledSlider::RefreshDynamicFillMaterial()
