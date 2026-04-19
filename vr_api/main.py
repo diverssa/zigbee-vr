@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import FastAPI, Request
+from paho.mqtt import publish
 
 import paho.mqtt.client as mqtt
 import json
@@ -8,15 +9,12 @@ import os
 
 app = FastAPI(title="Lamp API Bridge")
 
-# === Настройки MQTT ===
 MQTT_HOST = os.getenv("MQTT_HOST", "127.0.0.1")
 MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
 MQTT_USER = os.getenv("MQTT_USER", "")
 MQTT_PASS = os.getenv("MQTT_PASS", "")
 
-# friendly_name из Zigbee2MQTT
 DEVICE = "moes_bulb"
-# Топики Zigbee2MQTT
 TOPIC_SET = f"zigbee2mqtt/{DEVICE}/set"
 TOPIC_GET = f"zigbee2mqtt/{DEVICE}/get"
 TOPIC_STATE = f"zigbee2mqtt/{DEVICE}"
@@ -42,7 +40,7 @@ client.subscribe(TOPIC_STATE)
 client.loop_start()
 
 class BrightnessBody(BaseModel):
-    value: int  # 0..254 (Zigbee2MQTT), мы можем принимать 0..100 и конвертировать — позже
+    value: int
 
 @app.post("/lamp/on")
 def lamp_on():
@@ -56,7 +54,6 @@ def lamp_off():
 
 @app.post("/lamp/brightness")
 def lamp_brightness(body: BrightnessBody):
-    # ожидаем 0..254 (Z2M). Если хочешь 0..100 — скажи, сделаю конвертацию.
     v = max(0, min(254, body.value))
     client.publish(TOPIC_SET, json.dumps({"brightness": v}))
     return {"ok": True, "brightness": v}
@@ -103,5 +100,14 @@ async def lamp_color_rgb(request: Request):
 
 @app.get("/lamp/state")
 def lamp_state():
-    # можно ещё отправлять TOPIC_GET, но для MVP достаточно кэша last_state
     return {"ok": True, "state": last_state}
+
+class ColorTempBody(BaseModel):
+    value: int
+
+@app.post("/lamp/color_temp")
+async def set_color_temp(body: ColorTempBody):
+    v = max(153, min(500, body.value))
+    client.publish(TOPIC_SET, json.dumps({"color_temp": v}))
+    last_state["color_temp"] = v
+    return {"ok": True, "color_temp": v}
