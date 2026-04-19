@@ -12,6 +12,7 @@ public class MyProject2 : ModuleRules
             "CoreUObject",
             "Engine",
             "InputCore",
+            "Niagara",
             "UMG",
             "Slate",
             "SlateCore"

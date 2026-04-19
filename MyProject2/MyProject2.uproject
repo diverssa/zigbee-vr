@@ -68,6 +68,10 @@
 			]
 		},
 		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
 			"Name": "VaRest",
 			"Enabled": true
 		}
