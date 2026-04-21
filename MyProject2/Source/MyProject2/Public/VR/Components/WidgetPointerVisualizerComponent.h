@@ -32,6 +32,9 @@ public:
 	void SetVisualizationEnabled(bool bEnabled);
 
 	UFUNCTION(BlueprintCallable, Category = "VR|Widget Pointer Visualizer")
+	void SetShowOnlyOnWidgetHover(bool bEnabled);
+
+	UFUNCTION(BlueprintCallable, Category = "VR|Widget Pointer Visualizer")
 	void RefreshVisualization();
 
 protected:
@@ -55,6 +58,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VR|Widget Pointer Visualizer")
 	bool bVisualizationEnabled = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VR|Widget Pointer Visualizer", meta = (DisplayName = "Show Only On Widget Hover", ToolTip = "When enabled, the beam and cursor are only visible while the Widget Interaction component is hovering a hit-testable or interactable widget."))
+	bool bShowOnlyOnWidgetHover = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VR|Widget Pointer Visualizer|Beam")
 	FName BeamColorParameterName = TEXT("BeamColor");

@@ -79,6 +79,19 @@ void UWidgetPointerVisualizerComponent::SetVisualizationEnabled(bool bEnabled)
 	UpdateVisualization();
 }
 
+void UWidgetPointerVisualizerComponent::SetShowOnlyOnWidgetHover(bool bEnabled)
+{
+	bShowOnlyOnWidgetHover = bEnabled;
+
+	if (!bVisualizationEnabled)
+	{
+		HideVisualization();
+		return;
+	}
+
+	UpdateVisualization();
+}
+
 void UWidgetPointerVisualizerComponent::RefreshVisualization()
 {
 	TryResolveMissingReferences();
@@ -131,6 +144,12 @@ void UWidgetPointerVisualizerComponent::UpdateVisualization()
 	}
 
 	const bool bIsHoveringWidget = WidgetInteraction->IsOverHitTestVisibleWidget() || WidgetInteraction->IsOverInteractableWidget();
+	if (bShowOnlyOnWidgetHover && !bIsHoveringWidget)
+	{
+		HideVisualization();
+		return;
+	}
+
 	const FLinearColor ActiveBeamColor = bIsHoveringWidget ? BeamHoverColor : BeamDefaultColor;
 	const FLinearColor ActiveCursorColor = bIsHoveringWidget ? CursorHoverColor : CursorDefaultColor;
 
